@@ -7,5 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "gepa>=0.1.0",
     "inspect-ai>=0.3.193",
+    "inspect-evals>=0.5.1",
+    "litellm>=1.82.2",
     "openai>=2.28.0",
 ]
