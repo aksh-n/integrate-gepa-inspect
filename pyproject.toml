@@ -1,0 +1,11 @@
+[project]
+name = "integrate-gepa-inspect"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "gepa>=0.1.0",
+    "inspect-ai>=0.3.193",
+    "openai>=2.28.0",
+]
