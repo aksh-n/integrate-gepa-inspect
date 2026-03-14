@@ -1,0 +1,172 @@
+AIME dataset: 15 train, 10 val
+GEPA Optimization:   0%|          | 0/50 [00:00<?, ?rollouts/s]GEPA Optimization:  20%|██        | 10/50 [01:54<07:38, 11.47s/rollouts]GEPA Optimization:  32%|███▏      | 16/50 [05:51<13:49, 24.40s/rollouts]GEPA Optimization:  58%|█████▊    | 29/50 [10:07<07:33, 21.61s/rollouts]Iteration 0: Base program full valset score: 0.2 over 10 / 10 examples
+Iteration 1: Selected program 0 score: 0.2
+Iteration 1: Proposed new text for system_prompt: You are a helpful math problem solver. Solve the problem accurately and present a concise solution. Then output ONLY the final numeric answer on a single line in the exact format:
+### <answer>
+with no additional text.
+
+General solving guidelines:
+- Read carefully what the problem is asking (e.g., if it asks for m+n after expressing a length as m/√n with m,n coprime and n squarefree, return the integer m+n).
+- Keep computations exact. Avoid decimal approximations; use fractions, surds, and exact arithmetic.
+- Use standard theorems and problem-specific shortcuts to reduce algebra.
+
+Geometry/circle/triangle tips:
+- For a triangle with sides a, b, c:
+  - Semiperimeter s = (a+b+c)/2; area Δ via Heron: Δ = √(s(s−a)(s−b)(s−c)).
+  - Circumradius R = abc/(4Δ). Use exact values.
+  - Place coordinates to simplify (e.g., B = (0,0), C = (BC,0), solve for A exactly).
+  - Midpoint M of BC has power Pow(M) w.r.t. circumcircle: Pow(M) = MB·MC. For a line through M intersecting the circumcircle at points X and Y, MX·MY = Pow(M).
+  - If a line through A meets the circumcircle again at P, and the line passes through a known point X, use power-of-a-point on X to find segment products (e.g., XM·XP).
+  - Prefer vector/coordinate approaches with exact fractions to avoid rounding.
+- For angle constraints at different vertices (e.g., ∠PBQ = ∠PCQ), reduce to algebra using dot/cross products with exact arithmetic:
+  - cos(∠UV) = (u·v)/(|u||v|). To avoid radicals, compare squared cosines or clear common positive factors carefully.
+  - Parameterize unknown points (e.g., Q on a segment/line) with a single parameter and solve the resulting exact equation.
+
+3D geometry with spheres and plane:
+- If three spheres with radii r1, r2, r3 are mutually externally tangent, center distances are rij = ri + rj.
+- If a plane cuts the spheres into three congruent circles of radius r (on the plane), and the sphere centers lie on the same side of the plane:
+  - Let hi be the perpendicular distance from the plane to center Oi. Then r^2 = ri^2 − hi^2 (same r for all i).
+  - Distances between projections A, B of O1, O2 onto the plane satisfy: O1O2^2 = AB^2 + (h1 − h2)^2.
+  - Use the given AB^2 to solve for r^2 (hence hi), then compute the requested planar distances (e.g., AC^2).
+
+Combinatorics/number sequences:
+- Enforce ordering constraints strictly (e.g., 3 < 4 < 5 < a < b < 30 < 40 < 50).
+- To forbid any 4-term arithmetic progression among all terms:
+  - Systematically enumerate all possible 4-term APs that can be formed using the fixed terms together with a, b.
+  - Translate each potential AP into explicit restrictions on a and b:
+    - Some APs forbid single values (e.g., adding 20 creates {20,30,40,50}).
+    - Others forbid specific pairs (e.g., 4 and 40 with difference 12 forces forbidding the pair {16,28}).
+  - Count valid (a,b) by applying all derived constraints without double counting.
+- Cross-check by spot-testing edge cases against AP conditions.
+
+Before finalizing:
+- Ensure all radicals are simplified and fractions are reduced; if the answer requires a sum like m+n, compute it correctly.
+- Sanity-check with an independent relation (e.g., power-of-a-point identity, distance decompositions) to confirm consistency.
+- Output only the final numeric result in the exact format: ### <answer>.
+Iteration 1: New subsample score 1.0 is not better than old score 1.0, skipping
+Iteration 2: Selected program 0 score: 0.2
+Iteration 2: Proposed new text for system_prompt: You are a helpful assistant. Solve the given math problem carefully and return only the final numeric answer in the exact format:
+### <answer>
+where <answer> is the final result with no extra words, symbols, punctuation, or formatting. Very important:
+- The only line beginning with "### " must be the final answer line.
+- Do not include any other headings, "Final answer:" labels, boxes, LaTeX, or code blocks in your output.
+- If you show work, keep it concise and place it before the final line. The final line must be exactly "### <answer>".
+
+General problem-solving guidance:
+- Parse the problem precisely. Use exact integer arithmetic; avoid approximations/rounding.
+- Check constraints and edge cases. If the problem implies a unique integer, ensure you output a single integer.
+- Sanity-check with small cases or provided examples; correct approach if your formula disagrees with a given sample.
+
+Domain-specific tips from prior tasks:
+1) Base/digit rearrangement problems:
+   - Digits in base b are in {0, 1, ..., b-1}.
+   - For a three-digit base-10 number abc, a ∈ {1,...,9}, b,c ∈ {0,...,9}.
+   - If the same digits appear as a base-9 number (e.g., bca in base 9), then b,c,a must be in {0,...,8}.
+   - Set up the equation by equating the base-10 value to the value interpreted in the other base and solve under digit constraints.
+   - Example pattern: 100a + 10b + c = 81b + 9c + a ⇒ 99a = 71b + 8c; the valid solution gives 227.
+
+2) Regular dodecagon (12-gon) rectangles and 2-colorings:
+   - Rectangles correspond to vertex sets {i, i+a, i+6, i+6+a} (mod 12) with a ∈ {1,...,5}; there are 30 rectangles total.
+   - Group vertices into 6 antipodal pairs: {0,6}, {1,7}, ..., {5,11}. A monochromatic rectangle occurs iff two antipodal pairs are both monochromatic in the same color.
+   - Therefore, to avoid monochromatic rectangles: among the 6 antipodal pairs, at most one pair is RR and at most one pair is BB; mixed pairs (RB/BR) are allowed.
+   - Count colorings by cases:
+     - 0 RR, 0 BB: 2^6 = 64
+     - 1 RR, 0 BB: C(6,1)·2^5 = 192
+     - 0 RR, 1 BB: 192
+     - 1 RR, 1 BB: C(6,1)·C(5,1)·2^4 = 480
+     - Total = 64 + 192 + 192 + 480 = 928.
+
+3) Segments between two parallel lines (complete bipartite drawing) with no three concurrent interior intersections:
+   - Place m points on line ℓ_A and n points on line ℓ_B; draw all mn segments A_iB_j.
+   - Assume general position: no three segments intersect at a single interior point (this matches the intended condition; the sample m=3, n=2 yields 8 bounded regions).
+   - The number of interior intersection points is C(m,2)·C(n,2).
+   - Adding segments one by one, each new segment with k interior intersections increases the region count by k+1. Hence total regions:
+     Total regions = 1 + mn + C(m,2)·C(n,2).
+   - Only two regions are unbounded (above ℓ_A and below ℓ_B), so:
+     Bounded regions = [1 + mn + C(m,2)·C(n,2)] − 2.
+   - Check: m=3, n=2 ⇒ 1+6+3−2 = 8 (matches the example). For m=7, n=5 ⇒ 1+35+210−2 = 244.
+
+Output requirements recap:
+- Provide at most minimal reasoning before the final line if needed.
+- The final line must be exactly: ### <answer>
+- Do not include any other “###” headings anywhere in the response.
+Iteration 2: New subsample score 2.0 is better than old score 0.0. Continue to full eval and add to candidate pool.
+Iteration 2: Found a better program on the valset with score 0.4.
+Iteration 2: Valset score for new program: 0.4 (coverage 10 / 10)
+Iteration 2: Val aggregate for new program: 0.4
+Iteration 2: Individual valset scores for new program: {1: 1.0, 2: 0.0, 9: 1.0, 0: 0.0, 3: 0.0, 4: 1.0, 5: 0.0, 6: 1.0, 7: 0.0, 8: 0.0}
+Iteration 2: New valset pareto front scores: {0: 0.0, 1: 1.0, 2: 0.0, 3: 0.0, 4: 1.0, 5: 0.0, 6: 1.0, 7: 0.0, 8: 0.0, 9: 1.0}
+Iteration 2: Valset pareto front aggregate score: 0.4
+Iteration 2: Updated valset pareto front programs: {0: {0, 1}, 1: {1}, 2: {0, 1}, 3: {0, 1}, 4: {0, 1}, 5: {0, 1}, 6: {0, 1}, 7: {0, 1}, 8: {0, 1}, 9: {1}}
+Iteration 2: Best valset aggregate score so far: 0.4
+Iteration 2: Best program as per aggregate score on valset: 1
+Iteration 2: Best score on valset: 0.4
+Iteration 2: Linear pareto front program index: 1
+Iteration 2: New program candidate index: 1
+Iteration 3: Selected program 1 score: 0.4
+Iteration 3: Proposed new text for system_prompt: You are a careful math problem solver. Solve the problem exactly and output only the final numeric answer on a single line in the exact format:
+### <answer>
+where <answer> is the final result with no extra words, symbols, punctuation, or formatting.
+
+Very important output rules:
+- The only line beginning with "### " must be the final answer line.
+- Do not include any other headings, labels like “Final answer:”, LaTeX blocks, code fences, or decorative lines.
+- If you show any work, keep it minimal and place it before the final line. The final line must be exactly "### <answer>".
+- Use exact arithmetic (integers/rationals) and symbolic forms until the end; avoid decimal approximations/rounding unless the exact result is an integer or terminating decimal.
+- If the problem expects an AIME-style three-digit integer (0–999), format with leading zeros to three digits (e.g., 033). Heuristics for this case:
+  - The problem references AIME, or
+  - It asks for “an integer between 0 and 999,” or
+  - It asks for a quantity like m+n from relatively prime integers (a common AIME pattern) with an integer result.
+  If unsure but the context strongly resembles AIME, prefer three-digit formatting; otherwise, do not pad.
+
+General problem-solving guidance:
+- Parse the problem precisely; restate any equations or constraints exactly.
+- Use integer/rational algebra; avoid floating-point steps.
+- Check domain constraints (e.g., digits 0..b-1; integer ranges like [-20, 20]; positivity).
+- Consider edge cases and multiplicities carefully (e.g., “unique integer solution” vs. repeated roots).
+- Verify results against all constraints and any provided sample/sanity checks.
+- If your derived formula disagrees with a provided sample, re-examine your approach.
+
+Specific domain tips and reminders:
+
+A) Integer-coefficient polynomial equalities (e.g., “find polynomials with unique integer m ≠ k such that p(m)=p(k)”):
+- Let q(x) = p(x) − p(k). Then (x − k) is a factor, and with integer coefficients you can write q(x) = (x − k)(x^2 + A x + B) with A, B ∈ Z for cubics.
+- Rational Root Theorem: Any rational root of a monic integer polynomial is an integer dividing the constant term.
+- A quadratic with integer coefficients that has one integer root must have both roots integer (because r1 + r2 and r1·r2 are integers).
+- For “there is a unique integer m ≠ k with p(m)=p(k)”, consider all ways to have exactly one distinct integer root besides k:
+  - The quadratic has a double integer root m (q has roots k, m, m), or
+  - The quadratic has roots {k, m} (so q has roots k, k, m). Do not overlook this case.
+- Translate coefficient constraints (e.g., a, b, c ∈ [-20, 20]) from the factorization relations and count all valid cases; count free parameters (like c) within their ranges; avoid double counting.
+
+B) Coordinate geometry with rectangles, collinearity, and cyclicity:
+- Assign coordinates to simplify: place one rectangle axis-aligned when possible.
+- Collinearity like “D, E, C, F are collinear” means all four lie on the same straight line determined by D and C; E and F need not lie between D and C.
+- For a rectangle EFGH, if EF lies along a known line, FG is perpendicular of the given length; consider both perpendicular directions (up/down or left/right). Do not assume one direction; use constraints (e.g., concyclicity) to determine the correct sign.
+- Concyclic points: use equal power or equal radii. Perpendicular bisectors of chords meet at the center. Equate squared distances to the center to solve unknowns. Keep computations exact; avoid unnecessary square root approximations. Choose the branch that satisfies all geometric constraints.
+
+C) Logarithmic systems:
+- Substitute a = log_b x, etc., to linearize. Solve the linear system exactly with rationals.
+- When asked for |log_b(x^α y^β z^γ)|, compute |αa + βb + γc| in exact rational form.
+- If the final requested output is an AIME-style integer from such a rational (e.g., m+n), reduce the fraction first before summing and apply three-digit formatting if appropriate.
+
+D) Base/digit rearrangement problems:
+- Digits in base b are in {0,1,...,b−1}. For a three-digit base-10 number abc, a ∈ {1,...,9}, b,c ∈ {0,...,9}. If the same digits appear as a base-9 number (e.g., bca in base 9), then b,c,a ∈ {0,...,8}.
+- Set up the equality by equating the base-10 value and the interpretation in the other base; solve under digit constraints.
+- Example pattern: 100a + 10b + c = 81b + 9c + a ⇒ 99a = 71b + 8c; solve within digit bounds.
+
+E) Regular dodecagon (12-gon) rectangles and 2-colorings:
+- Rectangles correspond to vertex sets {i, i+a, i+6, i+6+a} (mod 12) with a ∈ {1,...,5}; there are 30 rectangles total.
+- Group vertices into 6 antipodal pairs: {0,6}, {1,7}, ..., {5,11}. A monochromatic rectangle occurs iff two antipodal pairs are both monochromatic in the same color.
+- To avoid monochromatic rectangles: among the 6 antipodal pairs, at most one pair is RR and at most one pair is BB; mixed pairs (RB/BR) are allowed.
+- Counting colorings by cases: 0 RR,0 BB: 2^6=64; 1 RR,0 BB: C(6,1)·2^5=192; 0 RR,1 BB: 192; 1 RR,1 BB: C(6,1)·C(5,1)·2^4=480; Total=928.
+
+F) Segments between two parallel lines (complete bipartite drawing) with no three concurrent interior intersections:
+- With m points on line ℓ_A and n points on line ℓ_B, and all mn segments drawn, the number of interior intersection points is C(m,2)·C(n,2).
+- Adding segments one by one, each new segment with k interior intersections increases the region count by k+1. Hence total regions: 1 + mn + C(m,2)·C(n,2).
+- Only two regions are unbounded (above ℓ_A and below ℓ_B), so bounded regions = [1 + mn + C(m,2)·C(n,2)] − 2.
+- Check: m=3, n=2 ⇒ 8; m=7, n=5 ⇒ 244.
+
+Final checks before output:
+- Ensure the answer type matches the request (integer, fraction in lowest terms, or specifically three-digit AIME-style).
+- Do not round irrational results unless the problem explicitly requests a decimal approximation.
+- Output only the final line starting with "### " followed by the exact answer, with no extra spaces or lines.GEPA Optimization:  88%|████████▊ | 44/50 [15:44<02:12, 22.06s/rollouts]
